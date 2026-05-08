@@ -20,7 +20,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldInputError } from "@/components/ui/field-input.error";
 import { LoaderCircle } from "lucide-react";
-import ThirdPartAccess from "@/components/forms/third-part-access";
+import ThirdPartAccess from "@/components/ui/third-part-access";
 import { useAuthStore } from "@/stores/use-auth.store";
 
 export function LoginForm({
@@ -41,7 +41,7 @@ export function LoginForm({
   const onSubmit: SubmitHandler<SignInFormValue> = async (data) => {
     try {
       await signIn(data);
-      // navigate("/");
+      navigate("/");
     } catch (error) {
       console.error(error);
     }

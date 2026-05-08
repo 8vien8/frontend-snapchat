@@ -8,10 +8,18 @@ import {
 import type { AuthState } from "@/types/store";
 import { getErrorMessage } from "@/lib/get-error-message";
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: null,
   user: null,
   isLoading: false,
+
+  clearState: () => {
+    set({
+      accessToken: null,
+      user: null,
+      isLoading: false,
+    });
+  },
 
   signUp: async (payload: SignUpPayload) => {
     set({ isLoading: true });
@@ -37,17 +45,57 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const res = await authService.signIn(payload);
       const userName = res?.userName;
+      const accessToken = res?.accessToken;
+
+      set({ accessToken: accessToken });
+
+      await get().getMe();
 
       toastVariants.success(
         `Wellcome back to Snap, ${userName}`,
         "Let's start your chat now!",
       );
     } catch (error) {
-      const message = getErrorMessage(error, "Cannot login");
+      const message = getErrorMessage(error, "Can not login");
 
       toastVariants.error("Login failed", message);
 
       throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  logOut: async () => {
+    set({ isLoading: true });
+
+    try {
+      get().clearState();
+      await authService.logOut();
+
+      toastVariants.success("Logout Success", "");
+    } catch (error) {
+      const message = getErrorMessage(error, "Can not logout");
+
+      toastVariants.error("Logout failed", message);
+
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  getMe: async () => {
+    set({ isLoading: true });
+    try {
+      const user = await authService.getMe();
+      set({ user });
+    } catch (error) {
+      const message = getErrorMessage(error, "Can not get profile");
+
+      set({ user: null, accessToken: null });
+
+      toastVariants.error("Fetch  profile failed", message);
     } finally {
       set({ isLoading: false });
     }

@@ -19,7 +19,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DotWaveAnimation } from "@/lib/ui/animations/dot-wave.animation";
 import { FieldInputError } from "@/components/ui/field-input.error";
-import ThirdPartAccess from "@/components/forms/third-part-access";
+import ThirdPartAccess from "@/components/ui/third-part-access";
 import { useAuthStore } from "@/stores/use-auth.store";
 
 export function SignupForm({

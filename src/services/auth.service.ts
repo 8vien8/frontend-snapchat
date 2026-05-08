@@ -28,4 +28,13 @@ export const authService = {
     });
     return data;
   },
+
+  logOut: async () => {
+    return api.post("auth/logout", {}, { withCredentials: true });
+  },
+
+  getMe: async () => {
+    const res = await api.get("/auth/me", { withCredentials: true });
+    return res?.data.user;
+  },
 };

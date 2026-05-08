@@ -9,4 +9,10 @@ export interface AuthState {
   signUp: (payload: SignUpPayload) => Promise<void>;
 
   signIn: (payload: SignInPayload) => Promise<void>;
+
+  clearState: () => void;
+
+  logOut: () => Promise<void>;
+
+  getMe: () => Promise<void>;
 }
