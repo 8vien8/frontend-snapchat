@@ -11,7 +11,7 @@ import { getErrorMessage } from "@/lib/get-error-message";
 export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: null,
   user: null,
-  isLoading: false,
+  isLoading: true,
 
   clearState: () => {
     set({
@@ -80,6 +80,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       toastVariants.error("Logout failed", message);
 
       throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  refreshAccessToken: async () => {
+    try {
+      const accessToken = await authService.refreshAccessToken();
+      set({ accessToken });
+
+      return accessToken;
+    } catch {
+      set({ user: null, accessToken: null });
+      return null;
+    }
+  },
+
+  initializeAuth: async () => {
+    set({ isLoading: true });
+
+    try {
+      const accessToken = await get().refreshAccessToken();
+
+      if (accessToken) {
+        await get().getMe();
+      }
     } finally {
       set({ isLoading: false });
     }

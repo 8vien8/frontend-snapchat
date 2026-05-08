@@ -33,6 +33,16 @@ export const authService = {
     return api.post("auth/logout", {}, { withCredentials: true });
   },
 
+  refreshAccessToken: async () => {
+    const { data } = await api.post(
+      "auth/refresh",
+      {},
+      { withCredentials: true, skipAuthRefresh: true },
+    );
+
+    return data.accessToken as string;
+  },
+
   getMe: async () => {
     const res = await api.get("/auth/me", { withCredentials: true });
     return res?.data.user;
