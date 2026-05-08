@@ -21,11 +21,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldInputError } from "@/components/ui/field-input.error";
 import { LoaderCircle } from "lucide-react";
 import ThirdPartAccess from "@/components/forms/third-part-access";
+import { useAuthStore } from "@/stores/use-auth.store";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { signIn } = useAuthStore();
   const navigate = useNavigate();
 
   const {
@@ -36,8 +38,13 @@ export function LoginForm({
     resolver: zodResolver(signInSchema),
   });
 
-  const onSubmit: SubmitHandler<SignInFormValue> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<SignInFormValue> = async (data) => {
+    try {
+      await signIn(data);
+      // navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

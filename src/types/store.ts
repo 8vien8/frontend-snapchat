@@ -1,5 +1,5 @@
 import type { User } from "@/types/user";
-import type { SignUpPayload } from "@/services/auth.service";
+import type { SignInPayload, SignUpPayload } from "@/services/auth.service";
 
 export interface AuthState {
   accessToken: string | null;
@@ -7,4 +7,6 @@ export interface AuthState {
   isLoading: boolean;
 
   signUp: (payload: SignUpPayload) => Promise<void>;
+
+  signIn: (payload: SignInPayload) => Promise<void>;
 }

@@ -8,12 +8,24 @@ export type SignUpPayload = {
   password: string;
 };
 
+export type SignInPayload = {
+  email: string;
+  password: string;
+};
+
 export const authService = {
   signUp: async (payload: SignUpPayload) => {
     const { data } = await api.post("auth/signup", payload, {
       withCredentials: true,
     });
 
+    return data;
+  },
+
+  signIn: async (payload: SignInPayload) => {
+    const { data } = await api.post("auth/signin", payload, {
+      withCredentials: true,
+    });
     return data;
   },
 };
