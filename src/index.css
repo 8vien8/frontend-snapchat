@@ -173,13 +173,18 @@
     background-color: oklch(0.18 0.03 260);
     background-image:
       radial-gradient(
-        at 0% 0%,
-        oklch(0.25 0.08 200 / 0.15) 0px,
-        transparent 50%
+        circle at 0% 0%,
+        oklch(0.45 0.12 190 / 0.18) 0%,
+        transparent 45%
       ),
       radial-gradient(
-        at 100% 100%,
-        oklch(0.25 0.08 300 / 0.15) 0px,
+        circle at 100% 0%,
+        oklch(0.42 0.12 320 / 0.14) 0%,
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 50% 100%,
+        oklch(0.35 0.08 260 / 0.12) 0%,
         transparent 50%
       );
   }

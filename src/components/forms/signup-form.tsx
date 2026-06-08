@@ -157,7 +157,7 @@ export function SignupForm({
             <img
               src={signUpImg}
               alt="Image"
-              className="select-none pointer-events-none absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              className="select-none pointer-events-none absolute inset-0 h-full w-full object-cover"
             />
           </div>
         </CardContent>

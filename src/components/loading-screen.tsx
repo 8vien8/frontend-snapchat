@@ -8,7 +8,7 @@ export default function LoadingScreen() {
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
 
         <div className="text-center">
-          <p className="text-sm text-muted-foreground flex">
+          <p className="text-sm text-muted-foreground flex pointer-events-none select-none">
             Please wait a moment <DotWaveAnimation />
           </p>
         </div>

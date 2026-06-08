@@ -7,123 +7,136 @@ import {
 } from "@/services/auth.service";
 import type { AuthState } from "@/types/store";
 import { getErrorMessage } from "@/lib/get-error-message";
+import { persist } from "zustand/middleware";
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-  accessToken: null,
-  user: null,
-  isLoading: true,
-
-  clearState: () => {
-    set({
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
       accessToken: null,
       user: null,
-      isLoading: false,
-    });
-  },
+      isLoading: true,
 
-  signUp: async (payload: SignUpPayload) => {
-    set({ isLoading: true });
+      setAccessToken: (accessToken: string) => {
+        set({ accessToken });
+      },
 
-    try {
-      await authService.signUp(payload);
+      clearState: () => {
+        set({
+          accessToken: null,
+          user: null,
+          isLoading: false,
+        });
+      },
 
-      toastVariants.success("Registration successful!");
-    } catch (error) {
-      const message = getErrorMessage(error, "Cannot create account");
+      signUp: async (payload: SignUpPayload) => {
+        set({ isLoading: true });
 
-      toastVariants.error("Registration failed", message);
+        try {
+          await authService.signUp(payload);
 
-      throw error;
-    } finally {
-      set({ isLoading: false });
-    }
-  },
+          toastVariants.success("Registration successful!");
+        } catch (error) {
+          const message = getErrorMessage(error, "Cannot create account");
 
-  signIn: async (payload: SignInPayload) => {
-    set({ isLoading: true });
+          toastVariants.error("Registration failed", message);
 
-    try {
-      const res = await authService.signIn(payload);
-      const userName = res?.userName;
-      const accessToken = res?.accessToken;
+          throw error;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
 
-      set({ accessToken: accessToken });
+      signIn: async (payload: SignInPayload) => {
+        set({ isLoading: true });
 
-      await get().getMe();
+        try {
+          const res = await authService.signIn(payload);
+          const userName = res?.userName;
+          const accessToken = res?.accessToken;
 
-      toastVariants.success(
-        `Wellcome back to Snap, ${userName}`,
-        "Let's start your chat now!",
-      );
-    } catch (error) {
-      const message = getErrorMessage(error, "Can not login");
+          get().setAccessToken(accessToken);
 
-      toastVariants.error("Login failed", message);
+          await get().getMe();
 
-      throw error;
-    } finally {
-      set({ isLoading: false });
-    }
-  },
+          toastVariants.success(
+            `Wellcome back to Snap, ${userName}`,
+            "Let's start your chat now!",
+          );
+        } catch (error) {
+          const message = getErrorMessage(error, "Can not login");
 
-  logOut: async () => {
-    set({ isLoading: true });
+          toastVariants.error("Login failed", message);
 
-    try {
-      get().clearState();
-      await authService.logOut();
+          throw error;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
 
-      toastVariants.success("Logout Success", "");
-    } catch (error) {
-      const message = getErrorMessage(error, "Can not logout");
+      logOut: async () => {
+        set({ isLoading: true });
 
-      toastVariants.error("Logout failed", message);
+        try {
+          get().clearState();
+          await authService.logOut();
 
-      throw error;
-    } finally {
-      set({ isLoading: false });
-    }
-  },
+          toastVariants.success("Logged out", "Bye - See you soon!");
+        } catch (error) {
+          const message = getErrorMessage(error, "Can not logout");
 
-  refreshAccessToken: async () => {
-    try {
-      const accessToken = await authService.refreshAccessToken();
-      set({ accessToken });
+          toastVariants.error("Logout failed", message);
 
-      return accessToken;
-    } catch {
-      set({ user: null, accessToken: null });
-      return null;
-    }
-  },
+          throw error;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
 
-  initializeAuth: async () => {
-    set({ isLoading: true });
+      refreshAccessToken: async () => {
+        try {
+          const accessToken = await authService.refreshAccessToken();
+          set({ accessToken });
 
-    try {
-      const accessToken = await get().refreshAccessToken();
+          return accessToken;
+        } catch {
+          set({ user: null, accessToken: null });
+          return null;
+        }
+      },
 
-      if (accessToken) {
-        await get().getMe();
-      }
-    } finally {
-      set({ isLoading: false });
-    }
-  },
+      initializeAuth: async () => {
+        set({ isLoading: true });
 
-  getMe: async () => {
-    set({ isLoading: true });
-    try {
-      const user = await authService.getMe();
-      set({ user });
-    } catch (error) {
-      const message = getErrorMessage(error, "Can not get profile");
+        try {
+          const accessToken = await get().refreshAccessToken();
 
-      set({ user: null, accessToken: null });
+          if (accessToken) {
+            await get().getMe();
+          }
+        } finally {
+          set({ isLoading: false });
+        }
+      },
 
-      toastVariants.error("Fetch  profile failed", message);
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-}));
+      getMe: async () => {
+        set({ isLoading: true });
+        try {
+          const user = await authService.getMe();
+          set({ user });
+        } catch (error) {
+          const message = getErrorMessage(error, "Can not get profile");
+
+          set({ user: null, accessToken: null });
+
+          toastVariants.error("Fetch  profile failed", message);
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+    }),
+    {
+      name: "auth-storage",
+      partialize: (state) => ({ user: state.user }), // only presist user not include loadingState and accessToken
+    },
+  ),
+);

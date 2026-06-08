@@ -10,6 +10,8 @@ export interface AuthState {
 
   signIn: (payload: SignInPayload) => Promise<void>;
 
+  setAccessToken: (accessToken: string) => void;
+
   clearState: () => void;
 
   logOut: () => Promise<void>;

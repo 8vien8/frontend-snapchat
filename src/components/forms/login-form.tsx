@@ -126,7 +126,7 @@ export function LoginForm({
             <img
               src={signInImg}
               alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale select-none pointer-events-none"
+              className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none"
             />
           </div>
         </CardContent>
