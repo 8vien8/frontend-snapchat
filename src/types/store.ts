@@ -1,5 +1,6 @@
 import type { User } from "@/types/user";
 import type { SignInPayload, SignUpPayload } from "@/services/auth.service";
+import type { Conversation, Message } from "@/types/chat";
 
 export interface AuthState {
   accessToken: string | null;
@@ -10,7 +11,7 @@ export interface AuthState {
 
   signIn: (payload: SignInPayload) => Promise<void>;
 
-  setAccessToken: (accessToken: string) => void;
+  setAccessToken: (accessToken: string | null) => void;
 
   clearState: () => void;
 
@@ -21,4 +22,23 @@ export interface AuthState {
   refreshAccessToken: () => Promise<string | null>;
 
   initializeAuth: () => Promise<void>;
+}
+
+export interface ChatState {
+  conversations: Conversation[];
+  messages: Record<
+    string,
+    {
+      items: Message[];
+      hasMore: boolean;
+      nextCursor?: string | null;
+    }
+  >;
+
+  activeConversationId: string | null;
+  loading: boolean;
+  reset: () => void;
+
+  setActiveConversation: (conversationId: string | null) => void;
+  fetchConversation: () => Promise<void>;
 }

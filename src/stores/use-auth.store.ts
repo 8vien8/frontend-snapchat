@@ -8,6 +8,7 @@ import {
 import type { AuthState } from "@/types/store";
 import { getErrorMessage } from "@/lib/get-error-message";
 import { persist } from "zustand/middleware";
+import { useChatStore } from "@/stores/use-chat-store";
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -16,7 +17,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isLoading: true,
 
-      setAccessToken: (accessToken: string) => {
+      setAccessToken: (accessToken) => {
         set({ accessToken });
       },
 
@@ -26,6 +27,7 @@ export const useAuthStore = create<AuthState>()(
           user: null,
           isLoading: false,
         });
+        useChatStore.getState().reset();
       },
 
       signUp: async (payload: SignUpPayload) => {
@@ -49,6 +51,8 @@ export const useAuthStore = create<AuthState>()(
       signIn: async (payload: SignInPayload) => {
         set({ isLoading: true });
 
+        useChatStore.getState().reset();
+
         try {
           const res = await authService.signIn(payload);
           const userName = res?.userName;
@@ -57,6 +61,7 @@ export const useAuthStore = create<AuthState>()(
           get().setAccessToken(accessToken);
 
           await get().getMe();
+          useChatStore.getState().fetchConversation();
 
           toastVariants.success(
             `Wellcome back to Snap, ${userName}`,
@@ -64,9 +69,7 @@ export const useAuthStore = create<AuthState>()(
           );
         } catch (error) {
           const message = getErrorMessage(error, "Can not login");
-
           toastVariants.error("Login failed", message);
-
           throw error;
         } finally {
           set({ isLoading: false });
@@ -112,6 +115,7 @@ export const useAuthStore = create<AuthState>()(
 
           if (accessToken) {
             await get().getMe();
+            useChatStore.getState().fetchConversation();
           }
         } finally {
           set({ isLoading: false });

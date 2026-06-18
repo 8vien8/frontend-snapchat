@@ -189,6 +189,26 @@
       );
   }
 
+  .bg-gradient-chat {
+    background:
+      radial-gradient(
+        circle at 20% 20%,
+        oklch(from var(--primary) l c h / 0.18),
+        transparent 34%
+      ),
+      radial-gradient(
+        circle at 80% 0%,
+        oklch(from var(--accent) l c h / 0.14),
+        transparent 32%
+      ),
+      linear-gradient(
+        135deg,
+        var(--background) 0%,
+        oklch(from var(--secondary) l c h / 0.16) 48%,
+        var(--background) 100%
+      );
+  }
+
   /* Subtle animation for the background */
   .animate-slow-glow {
     animation: glow 20s ease-in-out infinite alternate;
@@ -202,4 +222,14 @@
       filter: hue-rotate(20deg);
     }
   }
+
+  @keyframes ping {
+  }
+}
+
+/* custom className */
+@utility transition-smooth {
+  transition-property: all;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
