@@ -8,8 +8,12 @@ import GroupAvatar from "@/components/chats/group/group-avatar";
 
 const GrouptMessageCard = ({ convo }: { convo: Conversation }) => {
   const { user } = useAuthStore();
-  const { activeConversationId, setActiveConversation, messages } =
-    useChatStore();
+  const {
+    activeConversationId,
+    setActiveConversation,
+    messages,
+    fetchMessages,
+  } = useChatStore();
 
   if (!user) return;
 
@@ -19,7 +23,7 @@ const GrouptMessageCard = ({ convo }: { convo: Conversation }) => {
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
     if (!messages[id]) {
-      // TODO: fetch message
+      await fetchMessages(id);
     }
   };
   return (

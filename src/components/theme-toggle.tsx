@@ -10,7 +10,7 @@ export function ThemeToggle() {
     <Button
       size={"icon-lg"}
       onClick={toggleTheme}
-      className="rounded-full bg-background text-primary border border-border"
+      className="rounded-full bg-background text-primary border-2 border-border hover:border-primary/60 hover:shadow"
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
     >
       {isDark ? <SunIcon /> : <MoonIcon />}

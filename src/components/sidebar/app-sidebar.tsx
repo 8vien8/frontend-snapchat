@@ -19,17 +19,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-  TerminalIcon,
-  RobotIcon,
-  BookOpenIcon,
-  GearIcon,
-  LifebuoyIcon,
-  PaperPlaneTiltIcon,
-  CropIcon,
-  ChartPieIcon,
-  MapTrifoldIcon,
-} from "@phosphor-icons/react";
+
 import { BrandName } from "@/components/ui/brand-name";
 import { ThemeToggle } from "@/components/theme-toggle";
 import DirectMessageList from "@/components/chats/direct/direct-message-list";
@@ -38,140 +28,23 @@ import CreateGroupChatModal from "@/components/chats/modal/create-group-chat-mod
 import CreateNewChat from "@/components/chats/modal/create-new-chat";
 import AddFriendModal from "@/components/chats/modal/add-friend-modal";
 import { Separator } from "@/components/ui/separator";
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: <TerminalIcon />,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: <RobotIcon />,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: <BookOpenIcon />,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: <GearIcon />,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: <LifebuoyIcon />,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: <PaperPlaneTiltIcon />,
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: <CropIcon />,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: <ChartPieIcon />,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: <MapTrifoldIcon />,
-    },
-  ],
-};
+import { useAuthStore } from "@/stores/use-auth.store";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuthStore();
+
   return (
     <Sidebar variant="inset" {...props}>
-      <SidebarHeader className="p-1.5">
+      <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              className="dark:hover:bg-sidebar-accent/5"
+            >
               <a href="#">
-                <div className="flex aspect-square size-9 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-9 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground shadow shadow-primary">
                   {/* LOGO HERE */} Snap
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -217,8 +90,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
         <SidebarGroup></SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
+      <SidebarFooter className="p-1.5">
+        {user && <NavUser user={user} />}
       </SidebarFooter>
     </Sidebar>
   );

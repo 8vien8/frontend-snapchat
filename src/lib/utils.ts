@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { format, isToday, isSameWeek } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -48,4 +49,22 @@ export function formatOnlineTime(date: Date | string): string {
   const diffInYears = Math.floor(diffInDays / 365);
 
   return `${diffInYears} year${diffInYears === 1 ? "" : "s"}`;
+}
+
+export function formatMessageTime(date: Date): string {
+  const now = new Date();
+
+  if (isToday(date)) {
+    return format(date, "HH:mm");
+  }
+
+  if (isSameWeek(date, now, { weekStartsOn: 1 })) {
+    return format(date, "EEE HH:mm");
+  }
+
+  if (date.getFullYear() === now.getFullYear()) {
+    return format(date, "MM/dd, HH:mm");
+  }
+
+  return format(date, "MM/dd/yyyy, HH:mm");
 }

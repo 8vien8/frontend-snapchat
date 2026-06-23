@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/use-auth.store";
 import { useNavigate } from "react-router";
 
@@ -15,6 +14,6 @@ const Logout = () => {
     }
   };
 
-  return <Button onClick={handleLogout}>Logout</Button>;
+  return <p onClick={handleLogout}>Logout</p>;
 };
 export default Logout;

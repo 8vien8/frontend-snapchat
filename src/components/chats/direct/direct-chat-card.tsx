@@ -9,8 +9,12 @@ import UnreadCountBadge from "@/components/chats/unread-count-badge";
 
 const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
   const { user } = useAuthStore();
-  const { activeConversationId, setActiveConversation, messages } =
-    useChatStore();
+  const {
+    activeConversationId,
+    setActiveConversation,
+    messages,
+    fetchMessages,
+  } = useChatStore();
 
   if (!user) return;
   const otherUser = convo.participants.find((p) => p._id !== user?._id);
@@ -22,7 +26,7 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
     if (!messages[id]) {
-      // TODO: fetch message
+      await fetchMessages(id);
     }
   };
 
@@ -48,7 +52,7 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
           {/* TODO: status badge */}
           <StatusBadge status="offline" />
 
-          {unreadCount >= 0 && <UnreadCountBadge unreadCount={unreadCount} />}
+          {unreadCount > 0 && <UnreadCountBadge unreadCount={unreadCount} />}
         </>
       }
       subtitle={

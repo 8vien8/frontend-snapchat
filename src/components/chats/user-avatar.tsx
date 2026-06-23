@@ -15,9 +15,9 @@ const UserAvatar = ({ type, name, avatarUrl, className }: IUserAvatarProps) => {
   const displayName = name ? name : BRAND_NAME;
   const avatarStyle =
     type === "sidebar"
-      ? "size-12 text-base"
+      ? "size-9 md:size-10 text-base"
       : type === "chat"
-        ? " size-8 text-sm"
+        ? "size-7 md:size-8 text-sm"
         : "size-24 text-3xl shadow-md";
 
   return (
