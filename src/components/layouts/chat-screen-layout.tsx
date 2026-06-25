@@ -12,6 +12,7 @@ import ToggleSideBarButton from "@/components/animations/toggle-sidebar-button";
 import NoChatBeforeScreen from "@/components/no-message-before-screen";
 import MessageItem from "@/components/chats/message-item";
 import { useSocketStore } from "@/stores/use-socket-store";
+import { useEffect, useRef } from "react";
 
 const ChatScreenLayout = () => {
   const {
@@ -109,19 +110,42 @@ export const ChatWindowBody = () => {
     messages: allMessages,
   } = useChatStore();
 
-  const messages = allMessages[activeConversationId!]?.items || [];
+  const messages = allMessages[activeConversationId ?? ""]?.items ?? [];
+
   const selectedConvo = conversations.find(
     (c) => c._id === activeConversationId,
   );
 
-  // TODO:
-  if (!selectedConvo) return <div> Please choose conversation </div>;
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  if (!messages) return <NoChatBeforeScreen />;
+  useEffect(() => {
+    if (!messages.length) return;
+
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [messages.length]);
+
+  if (!selectedConvo) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        Please choose conversation
+      </div>
+    );
+  }
+
+  if (messages.length === 0) {
+    return (
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <NoChatBeforeScreen />
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-gradient-chat flex-1 overflow-y-auto bg-primary-foreground p-4 min-h-0">
-      <div className="flex flex-col overflow-x-hidden overflow-y-auto">
+    <div className="bg-gradient-chat flex-1 min-h-0 overflow-y-auto bg-primary-foreground">
+      <div className="flex flex-col px-4">
         {messages.map((message, index) => (
           <MessageItem
             key={message._id}
@@ -132,6 +156,8 @@ export const ChatWindowBody = () => {
             lastMessageStatus="delivered"
           />
         ))}
+
+        <div ref={messagesEndRef} className="pb-2" />
       </div>
     </div>
   );

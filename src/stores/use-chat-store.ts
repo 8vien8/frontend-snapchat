@@ -124,6 +124,51 @@ export const useChatStore = create<ChatState>()(
           console.error(error);
         }
       },
+
+      addMessage: async (message) => {
+        try {
+          const { user } = useAuthStore.getState();
+          const { fetchMessages } = get();
+
+          message.isOwn = message.senderId === user?._id;
+
+          const convoId = message.conversationId;
+
+          let prevItem = get().messages[convoId]?.items ?? [];
+
+          if (prevItem.length === 0) {
+            await fetchMessages(message.conversationId);
+            prevItem = get().messages[convoId]?.items;
+          } // ensure always put lated message into the end of list
+
+          set((state) => {
+            if (prevItem.some((m) => m._id === message._id)) {
+              return state;
+            }
+
+            return {
+              messages: {
+                ...state.messages,
+                [convoId]: {
+                  items: [...prevItem, message],
+                  hasMore: state.messages[convoId].hasMore,
+                  nextCursor: state.messages[convoId].nextCursor ?? undefined,
+                },
+              },
+            };
+          });
+        } catch (error) {
+          console.error("Error when add message", error);
+        }
+      },
+
+      updateConversation: (conversation) => {
+        set((state) => ({
+          conversations: state.conversations.map((c) =>
+            c._id === conversation._id ? { ...c, ...conversation } : c,
+          ),
+        }));
+      },
     }),
 
     {

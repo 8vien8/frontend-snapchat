@@ -59,11 +59,11 @@ const MessageItem = ({
       >
         <Card
           className={cn(
-            "p-2 border",
+            "p-2 border rounded-sm",
             message.isOwn ? "chat-bulbble-sent " : " chat-bubble-received ",
           )}
         >
-          <p className="text-sm leading-relaxed wrap-break-word">
+          <p className="text-sm leading-relaxed wrap-anywhere">
             {message.content}
           </p>
         </Card>

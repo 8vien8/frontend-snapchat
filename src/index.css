@@ -239,6 +239,10 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+@utility overflow-wrap-anywhere {
+  overflowwrap: "anywhere";
+}
+
 aside.EmojiPickerReact {
   --epr-preview-height: 50px;
 }
