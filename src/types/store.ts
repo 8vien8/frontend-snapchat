@@ -1,6 +1,7 @@
 import type { User } from "@/types/user";
 import type { SignInPayload, SignUpPayload } from "@/services/auth.service";
 import type { Conversation, Message } from "@/types/chat";
+import type { Socket } from "socket.io-client";
 
 export interface AuthState {
   accessToken: string | null;
@@ -53,4 +54,11 @@ export interface ChatState {
     content: string,
     imageUrl?: string,
   ) => Promise<void>;
+}
+
+export interface SocketState {
+  socket: Socket | null;
+  onlineUsers: string[];
+  connectSocket: () => void;
+  disConnectSocket: () => void;
 }

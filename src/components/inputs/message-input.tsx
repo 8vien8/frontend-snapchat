@@ -48,7 +48,7 @@ const ChatMessageInput = ({
   if (!user) return;
 
   return (
-    <div className="flex items-center gap-2 p-1.5 md:p-3 min-h-14">
+    <div className="flex items-center gap-2 p-1.5 md:p-3 min-h-14 bg-gradient-chat">
       <Button
         variant={"ghost"}
         size={"icon-lg"}
@@ -63,7 +63,7 @@ const ChatMessageInput = ({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Send your message here..."
-          className="pr-10 md:pr-20 h-10 resize-none"
+          className="pr-10 md:pr-20 h-10 resize-none border-2"
         />
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
           <EmojiPick onChange={(emoji) => setValue(`${value}${emoji}`)} />

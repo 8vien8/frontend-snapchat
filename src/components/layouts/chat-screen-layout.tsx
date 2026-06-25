@@ -11,6 +11,7 @@ import GroupAvatar from "@/components/chats/group/group-avatar";
 import ToggleSideBarButton from "@/components/animations/toggle-sidebar-button";
 import NoChatBeforeScreen from "@/components/no-message-before-screen";
 import MessageItem from "@/components/chats/message-item";
+import { useSocketStore } from "@/stores/use-socket-store";
 
 const ChatScreenLayout = () => {
   const {
@@ -38,7 +39,7 @@ const ChatScreenLayout = () => {
   if (!selectedConvo) return <WelComeScreen />;
 
   return (
-    <SidebarInset className="shadow shadow-primary/15">
+    <SidebarInset className="h-screen m-0! shadow shadow-primary/15 rounded-none!">
       <ChatWindowHeader currChat={currChat} partner={otherUser} />
       {loading ? <>Skeleton</> : <ChatWindowBody />}
       <ChatMessageInput selectedConvo={selectedConvo} />
@@ -53,8 +54,14 @@ export const ChatWindowHeader = ({
   currChat?: Conversation;
   partner?: Participant;
 }) => {
+  const { user } = useAuthStore();
+  const { onlineUsers } = useSocketStore();
+  const hasOnlineMember = currChat?.participants.some(
+    (participant) =>
+      onlineUsers.includes(participant._id) && participant._id !== user?._id,
+  );
   return (
-    <header className="flex items-center gap-2 px-4 py-2 shrink-0 h-12">
+    <header className="flex items-center gap-2 px-4 py-2 shrink-0 h-12 lg:h-16">
       <ToggleSideBarButton />
       {/* <SidebarTrigger className="-ml-1" /> */}
       <Separator
@@ -69,8 +76,11 @@ export const ChatWindowHeader = ({
               avatarUrl={partner?.avatarUrl ?? undefined}
               name={partner.displayName}
             />
-            {/* TODO: update real status */}
-            <StatusBadge status="offline" />
+            <StatusBadge
+              status={
+                onlineUsers.includes(partner?._id ?? "") ? "online" : "offline"
+              }
+            />
           </div>
           <h2 className="ml-3 font-semibold text-foreground">
             {partner.displayName}
@@ -81,8 +91,7 @@ export const ChatWindowHeader = ({
         <>
           <div className="relative">
             <GroupAvatar type="sidebar" participants={currChat?.participants} />
-            <StatusBadge status="offline" />
-            {/* TODO: update real status */}
+            <StatusBadge status={hasOnlineMember ? "online" : "offline"} />
           </div>
           <h2 className="ml-3 font-semibold text-foreground">
             {currChat?.group.name}
@@ -111,7 +120,7 @@ export const ChatWindowBody = () => {
   if (!messages) return <NoChatBeforeScreen />;
 
   return (
-    <div className="bg-gradient-chat flex-1 overflow-y-auto bg-primary-foreground p-4">
+    <div className="bg-gradient-chat flex-1 overflow-y-auto bg-primary-foreground p-4 min-h-0">
       <div className="flex flex-col overflow-x-hidden overflow-y-auto">
         {messages.map((message, index) => (
           <MessageItem

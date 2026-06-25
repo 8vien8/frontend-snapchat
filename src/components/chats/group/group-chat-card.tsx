@@ -4,10 +4,13 @@ import type { Conversation } from "@/types/chat";
 import ChatCard from "@/components/chats/chat-card";
 import UnreadCountBadge from "@/components/chats/unread-count-badge";
 import GroupAvatar from "@/components/chats/group/group-avatar";
+import StatusBadge from "@/components/chats/status-badge";
+import { useSocketStore } from "@/stores/use-socket-store";
 // import GroupAvatar from "@/components/chats/group/group-avatar";
 
 const GrouptMessageCard = ({ convo }: { convo: Conversation }) => {
   const { user } = useAuthStore();
+  const { onlineUsers } = useSocketStore();
   const {
     activeConversationId,
     setActiveConversation,
@@ -19,6 +22,10 @@ const GrouptMessageCard = ({ convo }: { convo: Conversation }) => {
 
   const unreadCount = convo.unreadCounts[user._id];
   const name = convo.group?.name ?? "";
+  const hasOnlineMember = convo.participants.some(
+    (participant) =>
+      participant._id !== user._id && onlineUsers.includes(participant._id),
+  );
 
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
@@ -40,10 +47,8 @@ const GrouptMessageCard = ({ convo }: { convo: Conversation }) => {
       unreadCount={unreadCount}
       leftSection={
         <>
-          {/* TODO: group avatar */}
           <GroupAvatar participants={convo.participants} type="chat" />
-          {/* <GroupAvatar /> */}
-          {/* TODO: status badge */}
+          <StatusBadge status={hasOnlineMember ? "online" : "offline"} />
           {unreadCount > 0 && <UnreadCountBadge unreadCount={unreadCount} />}
         </>
       }
