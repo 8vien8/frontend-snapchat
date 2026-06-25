@@ -5,6 +5,8 @@ import { ImagePlus, SendIcon } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import EmojiPick from "@/components/chats/emoji-picker";
+import { useChatStore } from "@/stores/use-chat-store";
+import { toastVariants } from "@/components/toaster";
 
 const ChatMessageInput = ({
   selectedConvo,
@@ -12,7 +14,36 @@ const ChatMessageInput = ({
   selectedConvo: Conversation;
 }) => {
   const { user } = useAuthStore();
+  const { sendDirectMessages, sendGroupMessages } = useChatStore();
   const [value, setValue] = useState("");
+
+  const sendMessage = async () => {
+    if (!value.trim) return;
+    const currValue = value;
+    setValue("");
+    try {
+      if (selectedConvo.type === "direct") {
+        const participants = selectedConvo.participants;
+        const otherUser = participants.filter((p) => p._id !== user?._id)[0];
+        await sendDirectMessages(otherUser._id, currValue);
+      } else {
+        sendGroupMessages(selectedConvo._id, currValue);
+      }
+    } catch (error) {
+      console.error(error);
+      toastVariants.error(
+        "Can not send message",
+        "Error occurred when send message, please try again!",
+      );
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
 
   if (!user) return;
 
@@ -28,6 +59,7 @@ const ChatMessageInput = ({
 
       <div className="relative flex-1">
         <Input
+          onKeyDown={handleKeyPress}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Send your message here..."
@@ -41,6 +73,8 @@ const ChatMessageInput = ({
         variant={"ghost"}
         size={"icon-lg"}
         className="bg-primary hover:[&_svg]:scale-120 text-white hover:text-primary"
+        onClick={sendMessage}
+        disabled={value === ""}
       >
         <SendIcon className="size-4" />
       </Button>

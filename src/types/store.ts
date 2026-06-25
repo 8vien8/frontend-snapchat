@@ -43,4 +43,14 @@ export interface ChatState {
   setActiveConversation: (conversationId: string | null) => void;
   fetchConversation: () => Promise<void>;
   fetchMessages: (conversationId?: string) => Promise<void>;
+  sendDirectMessages: (
+    recipientId: string,
+    content: string,
+    imageUrl?: string,
+  ) => Promise<void>;
+  sendGroupMessages: (
+    conversationId: string,
+    content: string,
+    imageUrl?: string,
+  ) => Promise<void>;
 }

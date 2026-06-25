@@ -5,7 +5,7 @@ import type { ChatState } from "@/types/store";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useAuthStore } from "@/stores/use-auth.store";
-import type { Message } from "@/types/chat";
+import type { Conversation, Message } from "@/types/chat";
 
 export const useChatStore = create<ChatState>()(
   persist(
@@ -88,6 +88,40 @@ export const useChatStore = create<ChatState>()(
           console.error(error);
         } finally {
           set({ messagesLoading: false });
+        }
+      },
+      sendDirectMessages: async (recipientId, content, imageUrl) => {
+        try {
+          const { activeConversationId } = get();
+          await chatService.sendDirectMessage(
+            recipientId,
+            content,
+            imageUrl,
+            activeConversationId || undefined,
+          );
+          set((state) => ({
+            conversations: state.conversations.map((convo) =>
+              convo._id === activeConversationId
+                ? { ...convo, seenBy: [] }
+                : convo,
+            ),
+          }));
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      sendGroupMessages: async (conversationId, content, imageUrl) => {
+        try {
+          await chatService.sendGroupMessage(conversationId, content, imageUrl);
+          set((state) => ({
+            conversations: state.conversations.map((convo: Conversation) =>
+              convo._id === get().activeConversationId
+                ? { ...convo, seenBy: [] }
+                : convo,
+            ),
+          }));
+        } catch (error) {
+          console.error(error);
         }
       },
     }),

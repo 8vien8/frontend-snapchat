@@ -133,12 +133,6 @@
   --sidebar-border: oklch(1 0 0 / 10%);
 }
 
-* {
-  transition-property: all;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -230,6 +224,11 @@
   }
 
   @keyframes ping {
+  }
+
+  .chat-emoji {
+    @apply inline-block align-middle;
+    font-size: 1.25em;
   }
 }
 

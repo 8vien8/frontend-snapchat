@@ -34,7 +34,7 @@ const MessageItem = ({
   return (
     <div
       className={cn(
-        "flex gap-2",
+        "flex gap-2 mt-1.5",
         message.isOwn ? "justify-end" : "justify-start",
       )}
     >

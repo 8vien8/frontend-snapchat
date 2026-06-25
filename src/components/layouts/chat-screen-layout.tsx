@@ -41,7 +41,7 @@ const ChatScreenLayout = () => {
     <SidebarInset className="shadow shadow-primary/15">
       <ChatWindowHeader currChat={currChat} partner={otherUser} />
       {loading ? <>Skeleton</> : <ChatWindowBody />}
-      <ChatMessageInput />
+      <ChatMessageInput selectedConvo={selectedConvo} />
     </SidebarInset>
   );
 };
