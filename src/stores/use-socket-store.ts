@@ -52,10 +52,20 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       if (
         useChatStore.getState().activeConversationId === message.conversationId
       ) {
-        //TODO: mark read message
+        useChatStore.getState().markAsSeen();
       }
 
       useChatStore.getState().updateConversation(updatedConversation);
+    });
+
+    // read message
+    socket.on("read-message", ({ conversation, lastMessage }) => {
+      const updated = {
+        ...conversation,
+        lastMessage,
+      };
+
+      useChatStore.getState().updateConversation(updated);
     });
 
     // socket.on("connect", () => console.log("Connected to Socket"));

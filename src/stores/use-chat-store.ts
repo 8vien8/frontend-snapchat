@@ -169,6 +169,51 @@ export const useChatStore = create<ChatState>()(
           ),
         }));
       },
+
+      markAsSeen: async () => {
+        try {
+          const { user } = useAuthStore.getState();
+          const { activeConversationId, conversations } = get();
+
+          if (!activeConversationId || !user) return;
+
+          const currConvo = conversations.find(
+            (c) => c._id === activeConversationId,
+          );
+
+          if (!currConvo) return;
+
+          if ((currConvo.unreadCounts?.[user._id] ?? 0) === 0) return;
+
+          await chatService.markAsSeen(activeConversationId);
+
+          set((state) => ({
+            conversations: state.conversations.map((c) =>
+              c._id === activeConversationId && c.lastMessage
+                ? {
+                    ...c,
+                    unreadCounts: {
+                      ...c.unreadCounts,
+                      [user._id]: 0,
+                    },
+                    seenBy: c.seenBy.some((u) => u._id === user._id)
+                      ? c.seenBy
+                      : [
+                          ...c.seenBy,
+                          {
+                            _id: user._id,
+                            displayName: user.displayName,
+                            avatarUrl: user.avatarUrl,
+                          },
+                        ],
+                  }
+                : c,
+            ),
+          }));
+        } catch (error) {
+          console.error("Can not mark as seen message", error);
+        }
+      },
     }),
 
     {

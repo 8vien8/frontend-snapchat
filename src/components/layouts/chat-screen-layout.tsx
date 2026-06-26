@@ -12,14 +12,13 @@ import ToggleSideBarButton from "@/components/animations/toggle-sidebar-button";
 import NoChatBeforeScreen from "@/components/no-message-before-screen";
 import MessageItem from "@/components/chats/message-item";
 import { useSocketStore } from "@/stores/use-socket-store";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 const ChatScreenLayout = () => {
   const {
     activeConversationId,
     conversations,
     messagesLoading: loading,
-    messages,
   } = useChatStore();
   const { user } = useAuthStore();
 
@@ -108,6 +107,7 @@ export const ChatWindowBody = () => {
     activeConversationId,
     conversations,
     messages: allMessages,
+    markAsSeen,
   } = useChatStore();
 
   const messages = allMessages[activeConversationId ?? ""]?.items ?? [];
@@ -118,7 +118,7 @@ export const ChatWindowBody = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!messages.length) return;
 
     messagesEndRef.current?.scrollIntoView({
@@ -126,6 +126,20 @@ export const ChatWindowBody = () => {
       block: "end",
     });
   }, [messages.length]);
+
+  useEffect(() => {
+    if (!selectedConvo) return;
+
+    const markSeen = async () => {
+      try {
+        await markAsSeen();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    markSeen();
+  }, [markAsSeen, selectedConvo]);
 
   if (!selectedConvo) {
     return (
@@ -146,16 +160,32 @@ export const ChatWindowBody = () => {
   return (
     <div className="bg-gradient-chat flex-1 min-h-0 overflow-y-auto bg-primary-foreground">
       <div className="flex flex-col px-4">
-        {messages.map((message, index) => (
-          <MessageItem
-            key={message._id}
-            index={index}
-            messages={messages}
-            message={message}
-            selectedConvo={selectedConvo}
-            lastMessageStatus="delivered"
-          />
-        ))}
+        {messages.map((message, index) => {
+          const isLastMessage = index === messages.length - 1;
+          let status: "delivered" | "seen" = "delivered";
+          if (
+            isLastMessage &&
+            selectedConvo.seenBy &&
+            selectedConvo.seenBy.length > 0
+          ) {
+            const otherSeen = selectedConvo.seenBy.some(
+              (u) => u._id !== message.senderId,
+            );
+            if (otherSeen) {
+              status = "seen";
+            }
+          }
+          return (
+            <MessageItem
+              key={message._id}
+              index={index}
+              messages={messages}
+              message={message}
+              selectedConvo={selectedConvo}
+              lastMessageStatus={status}
+            />
+          );
+        })}
 
         <div ref={messagesEndRef} className="pb-2" />
       </div>

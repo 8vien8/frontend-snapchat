@@ -3,6 +3,7 @@ import type { Conversation, Message, Participant } from "@/types/chat";
 import UserAvatar from "@/components/chats/user-avatar";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/stores/use-auth.store";
 
 interface MessageItemProps {
   messages: Message[];
@@ -19,6 +20,7 @@ const MessageItem = ({
   lastMessageStatus,
   selectedConvo,
 }: MessageItemProps) => {
+  const { user } = useAuthStore();
   const prev = messages[index - 1];
   const isGroupBreak =
     index === 0 ||
@@ -75,18 +77,59 @@ const MessageItem = ({
         )}
 
         {/* message status */}
-        {message.isOwn && message._id === selectedConvo.lastMessage?._id && (
-          <Badge
-            variant={"outline"}
-            className={cn(
-              "text-xs px-1 py-0.5 border-none",
-              lastMessageStatus === "seen"
-                ? "bg-primary/20 text-primary"
-                : "bg-muted text-muted-foreground",
+        {message._id === selectedConvo.lastMessage?._id && (
+          <div className="flex flex-col items-end mt-1">
+            {selectedConvo.type === "direct" ? (
+              message.isOwn && (
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-xs px-1 py-0.5 border-none animate-fade-in",
+                    lastMessageStatus === "seen"
+                      ? "bg-primary/20 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {lastMessageStatus === "seen" ? "Seen" : "Delivered"}
+                </Badge>
+              )
+            ) : (
+              (() => {
+                const seenByOthers = (selectedConvo.seenBy || []).filter(
+                  (u) => u._id !== message.senderId && u._id !== user?._id
+                );
+                if (seenByOthers.length > 0) {
+                  return (
+                    <div className="flex items-center gap-1 mt-0.5 pr-1 animate-fade-in">
+                      <div className="flex -space-x-1.5">
+                        {seenByOthers.slice(0, 5).map((u) => (
+                          <div key={u._id} title={u.displayName || "User"}>
+                            <UserAvatar
+                              type="seen"
+                              name={u.displayName || "User"}
+                              avatarUrl={u.avatarUrl ?? undefined}
+                              className="border border-background hover:scale-110 transition-transform duration-200"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground ml-1 font-medium select-none">
+                        {seenByOthers.length} seen
+                      </span>
+                    </div>
+                  );
+                }
+                return message.isOwn ? (
+                  <Badge
+                    variant="outline"
+                    className="text-xs px-1 py-0.5 border-none bg-muted text-muted-foreground animate-fade-in"
+                  >
+                    Delivered
+                  </Badge>
+                ) : null;
+              })()
             )}
-          >
-            {lastMessageStatus}
-          </Badge>
+          </div>
         )}
       </div>
     </div>

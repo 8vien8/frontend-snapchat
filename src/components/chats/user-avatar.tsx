@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 interface IUserAvatarProps {
-  type: "sidebar" | "chat" | "profile";
+  type: "sidebar" | "chat" | "profile" | "seen";
   name: string;
   avatarUrl?: string;
   className?: string;
@@ -18,7 +18,9 @@ const UserAvatar = ({ type, name, avatarUrl, className }: IUserAvatarProps) => {
       ? "size-9 md:size-10 text-base"
       : type === "chat"
         ? "size-7 md:size-8 text-sm"
-        : "size-24 text-3xl shadow-md";
+        : type === "profile"
+          ? "size-24 text-3xl shadow-md"
+          : "size-4 text-[8px]";
 
   return (
     <Avatar className={cn(avatarStyle, className)}>
