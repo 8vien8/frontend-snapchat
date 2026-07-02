@@ -55,7 +55,7 @@ export function formatMessageTime(date: Date): string {
   const now = new Date();
 
   if (isToday(date)) {
-    return format(date, "HH:mm");
+    return " Today " + format(date, "HH:mm");
   }
 
   if (isSameWeek(date, now, { weekStartsOn: 1 })) {
